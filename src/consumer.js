@@ -1,6 +1,6 @@
-/* consumer.js */
-const _ = require("./tracing");
 const amqplib = require('amqplib');
+const { logger } = require('./logs');
+
 let rabbitConnection;
 let exchange = 'logs'
 const rabbitMqListenToMessages = async (callback) => {
@@ -13,5 +13,6 @@ const rabbitMqListenToMessages = async (callback) => {
   await channel.bindQueue(q.queue, exchange, '');
   await channel.consume(q.queue, (message) => callback(message.content.toString()), { noAck: true })
 }
-rabbitMqListenToMessages((message) => console.log(`Consumer received message: ${message}`))
-console.log(`${process.env.SERVICE} Running`)
+
+rabbitMqListenToMessages((message) => logger.info(`Consumer received message: ${message}`))
+logger.info(`${process.env.SERVICE_NAME} Running`)
